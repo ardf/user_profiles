@@ -1,3 +1,19 @@
+"""
+    tests.py - Profile API Tests
+
+    This module contains test cases for the profile API endpoints.
+
+    Test Cases:
+    - ProfileAPITestCase: Test case class for the profile API.
+
+    Models:
+    - Profile: Model representing user profiles.
+
+    Serializers:
+    - ProfileSerializer: Serializer class for the Profile model.
+
+"""
+
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -8,7 +24,22 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class ProfileAPITestCase(APITestCase):
+    """
+    ProfileAPITestCase
+
+    Test case class for the profile API.
+
+    """
     def setUp(self):
+        """
+        Test case setup method.
+
+        - Creates a user.
+        - Defines profile data.
+        - Creates a profile.
+        - Defines the URL for the profile endpoint.
+
+        """
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         self.profile_data = {
             'name': 'John Doe',
@@ -19,6 +50,14 @@ class ProfileAPITestCase(APITestCase):
         self.url = reverse('profile')
 
     def test_get_all_profiles(self):
+        """
+        Test case for retrieving all profiles.
+
+        - Authenticates the user.
+        - Sends a GET request to the profile endpoint.
+        - Compares the response data with the serialized profiles.
+
+        """
         self.client.force_authenticate(user=self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -27,6 +66,16 @@ class ProfileAPITestCase(APITestCase):
         self.assertEqual(response.data, serializer.data)
 
     def test_create_profile(self):
+        """
+        Test case for creating a profile.
+
+        - Authenticates the user.
+        - Reads an image file for the profile picture.
+        - Defines new profile data.
+        - Sends a POST request to the profile endpoint with the new data.
+        - Verifies the response status code.
+
+        """
         self.client.force_authenticate(user=self.user)
         with open('img/profile_pictures/profile_img.jpg', 'rb') as file:
             image_content = file.read()
@@ -43,6 +92,16 @@ class ProfileAPITestCase(APITestCase):
         
 
     def test_update_profile(self):
+        """
+        Test case for updating a profile.
+
+        - Authenticates the user.
+        - Defines updated profile data.
+        - Defines the URL for the specific profile.
+        - Sends a PATCH request to the profile endpoint with the updated data.
+        - Verifies the response status code and the updated profile data.
+
+        """
         self.client.force_authenticate(user=self.user)
         updated_data = {
             'name': 'Updated Name',
