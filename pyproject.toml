@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "user-profiles"
+version = "0.1.0"
+description = "\"API endpoints to manage user profiles\""
+authors = ["ardf <ruyefadf@gmail.com>"]
+readme = "README.md"
+packages = [{include = "user_profiles"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^4.2.2"
+django-rest-framework = "^0.1.0"
+djangorestframework-simplejwt = "^5.2.2"
+pillow = "^9.5.0"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

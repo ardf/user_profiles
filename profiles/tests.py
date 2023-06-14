@@ -1,0 +1,57 @@
+from django.urls import reverse
+from rest_framework.test import APITestCase
+from rest_framework import status
+from .models import Profile
+from .serializers import ProfileSerializer
+from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+
+class ProfileAPITestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.profile_data = {
+            'name': 'John Doe',
+            'email': 'john.doe@example.com',
+            'bio': 'Test bio'
+        }
+        self.profile = Profile.objects.create(**self.profile_data)
+        self.url = reverse('profile')
+
+    def test_get_all_profiles(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        profiles = Profile.objects.all()
+        serializer = ProfileSerializer(profiles, many=True)
+        self.assertEqual(response.data, serializer.data)
+
+    def test_create_profile(self):
+        self.client.force_authenticate(user=self.user)
+        with open('img/profile_pictures/profile_img.jpg', 'rb') as file:
+            image_content = file.read()
+        image = SimpleUploadedFile(name='profile_img.jpg',content=image_content, content_type='image/jpeg')
+
+        new_data = {
+            'name': 'Groot',
+            'bio': "I'm groot",
+            "email": "groot@groot.com",
+            "profile_picture": image
+        }
+        response = self.client.post(self.url, new_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+
+    def test_update_profile(self):
+        self.client.force_authenticate(user=self.user)
+        updated_data = {
+            'name': 'Updated Name',
+            'bio': 'Updated bio'
+        }
+        url = reverse('update-profile', args=[self.profile.id])
+        response = self.client.patch(url, updated_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        profile = Profile.objects.get(id=self.profile.id)
+        serializer = ProfileSerializer(profile)
+        self.assertEqual(response.data, serializer.data)
+
