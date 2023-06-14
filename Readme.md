@@ -13,7 +13,7 @@ The project utilizes Django's authentication and authorization mechanisms to ens
 1. Clone the repository:
 
 ```
-git clone <repository-url>
+git clone https://github.com/ardf/user_profiles.git
 cd user_profiles
 ```
 
